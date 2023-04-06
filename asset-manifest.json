@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/delivery-crm/static/css/main.20152ae3.css",
+    "main.js": "/delivery-crm/static/js/main.07d3183d.js",
+    "index.html": "/delivery-crm/index.html",
+    "main.20152ae3.css.map": "/delivery-crm/static/css/main.20152ae3.css.map",
+    "main.07d3183d.js.map": "/delivery-crm/static/js/main.07d3183d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.20152ae3.css",
+    "static/js/main.07d3183d.js"
+  ]
+}
