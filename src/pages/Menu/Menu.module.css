@@ -1,0 +1,17 @@
+.menuContainer {
+  display: flex;
+  padding: 20px;
+}
+
+.menuLink {
+  display: block;
+}
+
+.menuLink:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.outlet {
+  flex-grow: 1;
+  margin-left: 10px;
+}
