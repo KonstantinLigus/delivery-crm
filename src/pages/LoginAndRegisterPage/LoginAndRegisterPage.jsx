@@ -18,7 +18,7 @@ const ui = new firebaseui.auth.AuthUI(firebase.auth());
 export const LoginAndRegisterPage = () => {
   useEffect(() => {
     ui.start('#firebaseui-auth-container', {
-      signInSuccessUrl: 'http://localhost:3000',
+      signInSuccessUrl: '/',
       signInOptions: [
         {
           provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
