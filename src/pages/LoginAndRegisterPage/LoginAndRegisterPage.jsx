@@ -1,24 +1,40 @@
-import * as firebaseui from 'firebaseui';
-import firebase from 'firebase/compat/app';
 import { useEffect } from 'react';
-
-export const firebaseConfig = {
-  apiKey: 'AIzaSyBVClOKPEUth1HcHcd-qRVAv_l97ywtPrs',
-  authDomain: 'authenticateforapps.firebaseapp.com',
-  projectId: 'authenticateforapps',
-  storageBucket: 'authenticateforapps.appspot.com',
-  messagingSenderId: '57680612991',
-  appId: '1:57680612991:web:cfc648150c2a0fa65c794a',
-  measurementId: 'G-2LQFL7WCPQ',
-};
-firebase.initializeApp(firebaseConfig);
-
-const ui = new firebaseui.auth.AuthUI(firebase.auth());
+import firebase from 'firebase/compat/app';
+import { ui } from 'dataStore/firebaseInit';
+import { useNavigate } from 'react-router-dom';
+import { adminEmail } from 'dataStore/firebaseConfig';
+import { setUserToStore } from 'dataStore/firestoreActions';
 
 export const LoginAndRegisterPage = () => {
+  const navigate = useNavigate();
   useEffect(() => {
-    ui.start('#firebaseui-auth-container', {
-      signInSuccessUrl: '/user',
+    const uiConfig = {
+      callbacks: {
+        signInSuccessWithAuthResult: async function (authResult, redirectUrl) {
+          if (authResult.user) {
+            await setUserToStore(
+              {
+                name: authResult.user.displayName,
+                email: authResult.user.email,
+              },
+              authResult.user.uid
+            );
+
+            if (authResult.user.email === adminEmail) {
+              navigate('admin');
+            } else {
+              navigate('user');
+            }
+          }
+          return false;
+        },
+        uiShown: function () {
+          // The widget is rendered.
+          // Hide the loader.
+          document.getElementById('loader').style.display = 'none';
+        },
+      },
+      signInFlow: 'popup',
       signInOptions: [
         {
           provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
@@ -29,13 +45,15 @@ export const LoginAndRegisterPage = () => {
         firebase.auth.FacebookAuthProvider.PROVIDER_ID,
         firebase.auth.PhoneAuthProvider.PROVIDER_ID,
       ],
-    });
-  }, []);
+    };
+
+    ui.start('#firebaseui-auth-container', uiConfig);
+  }, [navigate]);
 
   return (
     <>
-      <div>LoginAndRegisterPage</div>
       <div id="firebaseui-auth-container"></div>
+      <div id="loader">Loading...</div>
     </>
   );
 };

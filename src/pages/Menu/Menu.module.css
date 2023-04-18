@@ -1,17 +1,26 @@
-.menuContainer {
-  display: flex;
-  padding: 20px;
-}
-
 .menuLink {
   display: block;
+  color: rgb(255, 255, 255);
 }
 
-.menuLink:not(:last-child) {
+.linkItem:not(:last-child) {
   margin-bottom: 20px;
+}
+
+.active {
+  composes: menuLink;
+  color: rgb(255, 165, 0);
 }
 
 .outlet {
   flex-grow: 1;
-  margin-left: 10px;
+  margin-left: 150px;
+  padding-top: 20px;
+}
+
+.navContainer {
+  height: 100%;
+  position: fixed;
+  border: 20px solid rgb(66, 61, 61);
+  background-color: rgb(66, 61, 61);
 }

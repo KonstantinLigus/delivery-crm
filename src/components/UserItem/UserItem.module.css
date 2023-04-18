@@ -1,0 +1,9 @@
+.userPropertysWrapper {
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.select {
+  margin-left: 5px;
+}
