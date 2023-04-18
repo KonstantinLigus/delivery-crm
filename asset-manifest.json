@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/delivery-crm/static/css/main.f2d421df.css",
-    "main.js": "/delivery-crm/static/js/main.035d384e.js",
+    "main.css": "/delivery-crm/static/css/main.6eeb03bc.css",
+    "main.js": "/delivery-crm/static/js/main.b47a4de5.js",
     "index.html": "/delivery-crm/index.html",
-    "main.f2d421df.css.map": "/delivery-crm/static/css/main.f2d421df.css.map",
-    "main.035d384e.js.map": "/delivery-crm/static/js/main.035d384e.js.map"
+    "main.6eeb03bc.css.map": "/delivery-crm/static/css/main.6eeb03bc.css.map",
+    "main.b47a4de5.js.map": "/delivery-crm/static/js/main.b47a4de5.js.map"
   },
   "entrypoints": [
-    "static/css/main.f2d421df.css",
-    "static/js/main.035d384e.js"
+    "static/css/main.6eeb03bc.css",
+    "static/js/main.b47a4de5.js"
   ]
 }
