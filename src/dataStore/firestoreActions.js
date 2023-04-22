@@ -16,12 +16,12 @@ import { app } from './firebaseInit';
 
 const db = getFirestore(app);
 
-export const setUserToStore = async (user, uid) => {
-  await setDoc(doc(db, 'users', uid), user, { merge: true });
+export const setUserToStore = async (user, id) => {
+  await setDoc(doc(db, 'users', id), user, { merge: true });
 };
 
-export const getUserFromStore = async uid => {
-  const userSnap = await getDoc(doc(db, 'users', uid));
+export const getUserFromStore = async id => {
+  const userSnap = await getDoc(doc(db, 'users', id));
 
   if (userSnap.exists()) {
     return userSnap.data();
@@ -37,14 +37,14 @@ export const getAllUsers = async () => {
   }
   const users = usersSnap.docs.map(userSnap => {
     const user = userSnap.data();
-    user.uid = userSnap.id;
+    user.id = userSnap.id;
     return user;
   });
   return users;
 };
 
-export const updateUser = async ({ uid, obj }) => {
-  await updateDoc(doc(db, 'users', uid), obj);
+export const updateUser = async ({ id, obj }) => {
+  await updateDoc(doc(db, 'users', id), obj);
 };
 
 export const getUsersByProp = async ({ searchedProp, value }) => {
@@ -55,7 +55,7 @@ export const getUsersByProp = async ({ searchedProp, value }) => {
   }
   const filteredUsers = usersSnap.docs.map(userSnap => {
     const user = userSnap.data();
-    user.uid = userSnap.id;
+    user.id = userSnap.id;
     return user;
   });
   return filteredUsers;
@@ -92,14 +92,14 @@ export const getAllTrips = async () => {
   return trips;
 };
 
-export const getUserTrips = async uid => {
+export const getUserTrips = async id => {
   const colRef = collection(db, 'trips');
   const q = query(
     colRef,
     or(
-      where('driver.uid', '==', uid),
-      where('dispatcher.uid', '==', uid),
-      where('passengersID', 'array-contains', uid)
+      where('driver.id', '==', id),
+      where('dispatcher.id', '==', id),
+      where('passengersID', 'array-contains', id)
     )
   );
   const tripsSnap = await getDocs(q);
@@ -136,7 +136,7 @@ export const usersListListener = setUsers => {
     }
     const users = usersSnap.docs.map(userSnap => {
       const user = userSnap.data();
-      user.uid = userSnap.id;
+      user.id = userSnap.id;
       return user;
     });
     setUsers(users);

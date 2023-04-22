@@ -1,6 +1,6 @@
 export const UserOptionsList = ({ items: users }) =>
   users.map(user => (
-    <option key={user.uid} value={user.uid}>
+    <option key={user.id} value={user.id}>
       {user.name}
     </option>
   ));

@@ -1,4 +1,5 @@
-import { TripsList } from 'components/TripsList/TripsList';
+import { List } from 'components/List/List';
+import { Trip } from 'components/Trip/Trip';
 import { tripsListListener } from 'dataStore/firestoreActions';
 import { useEffect, useState } from 'react';
 
@@ -10,5 +11,5 @@ export const WholeTripsList = () => {
     return () => unsubscribeTripsListListener();
   }, []);
 
-  return <TripsList trips={trips} />;
+  return <List items={trips} item={Trip} />;
 };

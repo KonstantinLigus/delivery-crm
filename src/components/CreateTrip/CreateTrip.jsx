@@ -5,9 +5,9 @@ import {
   usersListListener,
 } from 'dataStore/firestoreActions';
 import { useEffect, useState } from 'react';
-import css from './CreateTrip.module.css';
 import { UserOptionsList } from 'components/UserOptionsList/UserOptionsList';
 import { CarOptionsList } from 'components/CarOptionList/CarOptionList';
+import { Form, Button, BH2 } from 'bootstrap-4-react';
 
 export const CreateTrip = () => {
   const [users, setUsers] = useState([]);
@@ -31,12 +31,12 @@ export const CreateTrip = () => {
     const trip = Object.fromEntries(formData.entries());
     trip.passengers = formData.getAll('passengers');
     trip.passengersID = formData.getAll('passengers');
-    trip.driver = drivers.find(driverItem => driverItem.uid === trip.driver);
+    trip.driver = drivers.find(driverItem => driverItem.id === trip.driver);
     trip.dispatcher = dispatchers.find(
-      dispatcherItem => dispatcherItem.uid === trip.dispatcher
+      dispatcherItem => dispatcherItem.id === trip.dispatcher
     );
     trip.passengers = passengers.filter(passengerItem =>
-      trip.passengers.includes(passengerItem.uid)
+      trip.passengers.includes(passengerItem.id)
     );
     trip.car = cars.find(car => car.id === trip.car);
     await addTripToStore(trip);
@@ -44,37 +44,41 @@ export const CreateTrip = () => {
 
   return (
     <>
-      <form onSubmit={submitBtnHandler}>
-        <h2>Create Trip</h2>
-        <h3>List of Drivers</h3>
+      <Form mb="3" onSubmit={submitBtnHandler}>
+        <BH2 mb="3">Create Trip</BH2>
         <Select
           items={drivers}
           selectName="driver"
           optionsList={UserOptionsList}
+          label="List of Drivers"
         />
-        <h3>List of Passengers</h3>
         <Select
           items={passengers}
           selectName="passengers"
           isMultiple={true}
           optionsList={UserOptionsList}
+          label="List of Passengers"
         />
-        <h3>List of Dispatchers</h3>
         <Select
           items={dispatchers}
           selectName="dispatcher"
           optionsList={UserOptionsList}
+          label="List of Dispatchers"
         />
-        <h3>List of Cars</h3>
-        <Select items={cars} selectName="car" optionsList={CarOptionsList} />
-        <h3>From:</h3>
-        <input type="text" name="from" required />
-        <h3>To:</h3>
-        <input type="text" name="to" required />
-        <button type="submit" className={css.buttonTrip}>
+        <Select
+          items={cars}
+          selectName="car"
+          optionsList={CarOptionsList}
+          label="List of Cars"
+        />
+        <label htmlFor="from">From:</label>
+        <Form.Input type="text" name="from" id="from" required />
+        <label htmlFor="to">To:</label>
+        <Form.Input mb="3" type="text" name="to" id="to" required />
+        <Button type="submit" lg block warning>
           Create Trip
-        </button>
-      </form>
+        </Button>
+      </Form>
     </>
   );
 };

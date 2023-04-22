@@ -1,0 +1,10 @@
+:root {
+  /* colors */
+  --primary: #ffffff;
+  --accent: rgb(255, 165, 0);
+  --bgColor: rgb(66, 61, 61);
+  /* sizes */
+  --size-S: 5px;
+  --size-M: 10px;
+  --size-L: 20px;
+}

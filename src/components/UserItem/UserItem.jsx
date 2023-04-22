@@ -1,36 +1,36 @@
 import { useState } from 'react';
 import css from './UserItem.module.css';
 import { updateUser } from 'dataStore/firestoreActions';
+import { InputGroup, Form, Card } from 'bootstrap-4-react';
 
-export const UserItem = ({ user }) => {
-  const [userRole, setRole] = useState(user.role);
+export const UserItem = ({ item }) => {
+  const [userRole, setRole] = useState(item.role);
 
   const selectRoleHandler = async e => {
-    const uid = e.target.attributes.uid.value;
+    const id = e.target.attributes.uid.value;
     const role = e.target.value;
-    await updateUser({ uid, obj: { role } });
+    await updateUser({ id, obj: { role } });
     setRole(role);
   };
 
   return (
-    <div className={css.userPropertysWrapper}>
-      <div>{user.name}</div>
-      <div>{user.email}</div>
-      <label>
-        Role:
-        <select
+    <Card.Body>
+      <Card.Title>{item.name}</Card.Title>
+      <Card.Text mb="3">{item.email}</Card.Text>
+      <InputGroup>
+        <InputGroup.PrependText>Role:</InputGroup.PrependText>
+        <Form.CustomSelect
           onChange={selectRoleHandler}
           value={userRole}
           name="role"
-          uid={user.uid}
-          className={css.select}
+          uid={item.id}
         >
           <option value="none">none</option>
           <option value="driver">driver</option>
           <option value="passenger">passenger</option>
           <option value="dispatcher">dispatcher</option>
-        </select>
-      </label>
-    </div>
+        </Form.CustomSelect>
+      </InputGroup>
+    </Card.Body>
   );
 };

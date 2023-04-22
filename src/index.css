@@ -37,3 +37,10 @@ ul {
   box-sizing: border-box;
   text-decoration: none;
 }
+
+a {
+  color: #ffffff;
+}
+.active {
+  color: #ffc107;
+}

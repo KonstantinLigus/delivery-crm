@@ -1,17 +1,17 @@
+import { BDiv, BH2 } from 'bootstrap-4-react';
 import { UsersList } from 'components/UsersList/UsersList';
-import css from './AdminPage.module.css';
 import { CreateTrip } from 'components/CreateTrip/CreateTrip';
 import { WholeTripsList } from 'components/WholeTripsList/WholeTripsList';
 
 export const AdminPage = () => {
   return (
     <>
-      <div className={css.usersListWrapper}>
-        <h2 className={css.title}>List of users</h2>
+      <BDiv mb="3">
+        <BH2 mb="3">List of users</BH2>
         <UsersList />
-      </div>
+      </BDiv>
       <CreateTrip />
-      <h2>All Trips</h2>
+      <BH2 mb="3">All Trips</BH2>
       <WholeTripsList />
     </>
   );

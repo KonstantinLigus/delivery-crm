@@ -1,13 +1,26 @@
 import { useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app';
 import { ui } from 'dataStore/firebaseInit';
-import { useNavigate } from 'react-router-dom';
 import { adminEmail } from 'dataStore/firebaseConfig';
 import { setUserToStore } from 'dataStore/firestoreActions';
 
 export const LoginAndRegisterPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        if (user.email === adminEmail) {
+          navigate('admin');
+        }
+        if (user.email !== adminEmail) {
+          navigate('user');
+        }
+      }
+    });
     const uiConfig = {
       callbacks: {
         signInSuccessWithAuthResult: async function (authResult, redirectUrl) {

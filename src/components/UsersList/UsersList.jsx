@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import css from './UsersList.module.css';
 import { UserItem } from 'components/UserItem/UserItem';
 import { getAllUsers } from 'dataStore/firestoreActions';
+import { List } from 'components/List/List';
 
 export const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -13,18 +13,5 @@ export const UsersList = () => {
     })();
   }, []);
 
-  return (
-    <>
-      {users.length !== 0 && (
-        <ul>
-          {users.length !== 0 &&
-            users.map(user => (
-              <li className={css.userWrapper} key={user.uid}>
-                <UserItem user={user} />
-              </li>
-            ))}
-        </ul>
-      )}
-    </>
-  );
+  return <List items={users} item={UserItem} />;
 };

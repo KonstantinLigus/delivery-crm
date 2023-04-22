@@ -1,4 +1,6 @@
-import { TripsList } from 'components/TripsList/TripsList';
+import { BH2 } from 'bootstrap-4-react';
+import { List } from 'components/List/List';
+import { Trip } from 'components/Trip/Trip';
 import { getUserTrips } from 'dataStore/firestoreActions';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -23,9 +25,8 @@ export const UserPage = () => {
   }, []);
   return (
     <>
-      <div>UserPage</div>
-      <h2>Yuor Trips</h2>
-      <TripsList trips={userTrips} />
+      <BH2 mb="3">Your Trips</BH2>
+      <List items={userTrips} item={Trip} />
     </>
   );
 };
