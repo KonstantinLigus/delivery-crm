@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import css from './UserItem.module.css';
 import { updateUser } from 'dataStore/firestoreActions';
 import { InputGroup, Form, Card } from 'bootstrap-4-react';
 
