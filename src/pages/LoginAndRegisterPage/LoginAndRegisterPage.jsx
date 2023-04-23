@@ -54,10 +54,7 @@ export const LoginAndRegisterPage = () => {
           signInMethod:
             firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
         },
-        {
-          provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-          scopes: ['public_profile', 'email'],
-        },
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.PhoneAuthProvider.PROVIDER_ID,
       ],
@@ -73,3 +70,8 @@ export const LoginAndRegisterPage = () => {
     </>
   );
 };
+
+// {
+// provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+//   scopes: ['public_profile', 'email'],
+// },
