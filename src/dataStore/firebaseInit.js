@@ -6,4 +6,6 @@ import { firebaseConfig } from 'dataStore/firebaseConfig';
 
 export const app = firebase.initializeApp(firebaseConfig);
 
-export const ui = new firebaseui.auth.AuthUI(firebase.auth());
+export const ui =
+  firebaseui.auth.AuthUI.getInstance() ||
+  new firebaseui.auth.AuthUI(firebase.auth());
