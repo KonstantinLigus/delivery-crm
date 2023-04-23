@@ -4,6 +4,7 @@ import { BDiv, Button, Col, Row, Container, List } from 'bootstrap-4-react';
 import { getUserFromStore } from 'dataStore/firestoreActions';
 import { useEffect, useState } from 'react';
 import { adminEmail } from 'dataStore/firebaseConfig';
+import { auth } from 'dataStore/firebaseInit';
 
 export const Menu = () => {
   const [userState, setUserState] = useState({});
@@ -13,7 +14,9 @@ export const Menu = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const auth = getAuth();
+    // const auth = getAuth();
+    // (async () => {
+    // const user = auth.currentUser;
     onAuthStateChanged(auth, async user => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -27,6 +30,7 @@ export const Menu = () => {
         setUserState({});
         setIsAdminLoggedIn(false);
       }
+      // })();
     });
   }, []);
 
