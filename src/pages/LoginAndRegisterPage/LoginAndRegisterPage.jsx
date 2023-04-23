@@ -1,15 +1,19 @@
+import {
+  onAuthStateChanged,
+  FacebookAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth';
 import { useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app';
-import { ui } from 'dataStore/firebaseInit';
+import { auth, facebookProvider, ui } from 'dataStore/firebaseInit';
 import { adminEmail } from 'dataStore/firebaseConfig';
 import { setUserToStore } from 'dataStore/firestoreActions';
+import { Button } from 'bootstrap-4-react';
 
 export const LoginAndRegisterPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
-    const auth = getAuth();
     onAuthStateChanged(auth, async user => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -54,7 +58,7 @@ export const LoginAndRegisterPage = () => {
           signInMethod:
             firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
         },
-        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.PhoneAuthProvider.PROVIDER_ID,
       ],
@@ -63,10 +67,49 @@ export const LoginAndRegisterPage = () => {
     ui.start('#firebaseui-auth-container', uiConfig);
   }, [navigate]);
 
+  const facebookSignInHandler = () => {
+    // facebookProvider.addScope('public_profile');
+    // facebookProvider.addScope('email');
+    signInWithPopup(auth, facebookProvider)
+      .then(result => {
+        // The signed-in user info.
+        const user = result.user;
+        console.log(user);
+        navigate('user');
+
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        const credential = FacebookAuthProvider.credentialFromResult(result);
+        const accessToken = credential.accessToken;
+
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch(error => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = FacebookAuthProvider.credentialFromError(error);
+
+        // ...
+      });
+  };
+
   return (
     <>
       <div id="firebaseui-auth-container"></div>
       <div id="loader">Loading...</div>
+      <Button
+        block
+        mx="auto"
+        primary
+        style={{ width: '220px' }}
+        onClick={facebookSignInHandler}
+      >
+        Sign in with Facebook
+      </Button>
     </>
   );
 };
