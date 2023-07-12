@@ -1,17 +1,42 @@
-import { onAuthStateChanged } from 'firebase/auth';
-import { useEffect } from 'react';
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  signInWithRedirect,
+} from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import firebase from 'firebase/compat/app';
-import { auth, ui } from 'dataStore/firebaseInit';
+import {
+  auth,
+  facebookProvider,
+  getProviderForProviderId,
+  ui,
+  uiConfig,
+} from 'dataStore/firebaseInit';
 import { adminEmail } from 'dataStore/firebaseConfig';
 import { setUserToStore } from 'dataStore/firestoreActions';
+import { BDiv, Button } from 'bootstrap-4-react';
 
 export const LoginAndRegisterPage = () => {
   const navigate = useNavigate();
+  const [isMatchMobile, setIsMatchMobile] = useState(false);
+
   useEffect(() => {
-    onAuthStateChanged(auth, async user => {
+    const onMediaChangeHandler = e => setIsMatchMobile(e.matches);
+    const media = window.matchMedia('(max-width: 268px)');
+    media.addEventListener('change', onMediaChangeHandler);
+    return () => media.removeEventListener('change', onMediaChangeHandler);
+  }, []);
+
+  useEffect(() => {
+    ui.start('#firebaseui-auth-container', uiConfig);
+    const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         // User is signed in, see docs for a list of available properties
+        const userForDB = {
+          name: user.displayName,
+          email: user.email,
+        };
+        setUserToStore(userForDB);
         if (user.email === adminEmail) {
           navigate('admin');
         }
@@ -20,183 +45,77 @@ export const LoginAndRegisterPage = () => {
         }
       }
     });
-    const uiConfig = {
-      callbacks: {
-        signInSuccessWithAuthResult: async function (authResult, redirectUrl) {
-          if (authResult.user) {
-            await setUserToStore(
-              {
-                name: authResult.user.displayName,
-                email: authResult.user.email,
-              },
-              authResult.user.uid
-            );
-
-            if (authResult.user.email === adminEmail) {
-              navigate('admin');
-            } else {
-              navigate('user');
-            }
-          }
-          return false;
-        },
-        uiShown: function () {
-          // The widget is rendered.
-          // Hide the loader.
-          document.getElementById('loader').style.display = 'none';
-        },
-      },
-      signInFlow: 'popup',
-      signInOptions: [
-        {
-          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-          signInMethod:
-            firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-        },
-        // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-      ],
-    };
-
-    ui.start('#firebaseui-auth-container', uiConfig);
+    return () => unsubscribe();
   }, [navigate]);
+
+  const facebookSignInHandler = async () => {
+    facebookProvider.addScope('public_profile');
+    facebookProvider.addScope('email');
+    facebookProvider.setCustomParameters({
+      prompt: 'select_account',
+      display: 'popup',
+    });
+    try {
+      await signInWithPopup(auth, facebookProvider);
+    } catch (error) {
+      accountExistCondition(error);
+    }
+  };
+
+  const accountExistCondition = async error => {
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      const email = error.customData.email;
+      const methods = await auth.fetchSignInMethodsForEmail(email);
+      const provider = getProviderForProviderId(methods[0]);
+      await signInWithRedirect(auth, provider);
+    }
+  };
 
   return (
     <>
+      <BDiv style={{ padding: '0 24px' }}>
+        <Button
+          type="button"
+          block
+          mx="auto"
+          primary
+          style={{
+            maxWidth: '220px',
+            height: '40px',
+            display: 'flex',
+            padding: '0 16px',
+            borderRadius: '2px',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            backgroundColor: '#3b5998',
+            fontFamily: 'Roboto,Helvetica,Arial,sans-serif',
+            lineHeight: 'normal',
+            fontWeight: '500',
+            color: '#fff',
+            fontSize: '14px',
+            textTransform: 'none',
+            boxShadow:
+              '0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12)',
+          }}
+          onClick={facebookSignInHandler}
+        >
+          <img
+            alt=""
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg"
+            style={{
+              width: '18px',
+              height: '18px',
+              marginRight: '16px',
+              border: 'none',
+              display: 'inline-block',
+              verticalAlign: 'middle',
+            }}
+          />
+          {!isMatchMobile && 'Sign in with Facebook'}
+          {isMatchMobile && 'Facebook'}
+        </Button>
+      </BDiv>
       <div id="firebaseui-auth-container"></div>
-      <div id="loader">Loading...</div>
     </>
   );
 };
-
-// {
-// provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-//   scopes: ['public_profile', 'email'],
-// },
-
-/* catch for exist user */
-// catch(err => {
-//         // User's email already exists.
-//         if (err.code === 'auth/account-exists-with-different-credential') {
-//           // The pending Facebook credential.
-//           var pendingCred = err.credential;
-//           // The provider account's email address.
-//           var email = err.email;
-//           // Get the sign-in methods for this email.
-//           auth.fetchSignInMethodsForEmail(email).then(methods => {
-//             // If the user has several sign-in methods, the first method
-//             // in the list will be the "recommended" method to use.
-//             if (methods[0] === 'password') {
-//               // TODO: Ask the user for their password.
-//               // In real scenario, you should handle this asynchronously.
-//               var password = promptUserForPassword();
-//               auth
-//                 .signInWithEmailAndPassword(email, password)
-//                 .then(result => {
-//                   return result.user.linkWithCredential(pendingCred);
-//                 })
-//                 .then(() => {
-//                   // Facebook account successfully linked to the existing user.
-//                   goToApp();
-//                 });
-//               return;
-//             }
-//             // All other cases are external providers.
-//             // Construct provider object for that provider.
-//             // TODO: Implement getProviderForProviderId.
-//             var provider = getProviderForProviderId(methods[0]);
-//             // At this point, you should let the user know that they already have an
-//             // account with a different provider, and validate they want to sign in
-//             // with the new provider.
-//             // Note: Browsers usually block popups triggered asynchronously, so in
-//             // real app, you should ask the user to click on a "Continue" button
-//             // that will trigger signInWithPopup().
-//             auth.signInWithPopup(provider).then(result => {
-//               // Note: Identity Platform doesn't control the provider's sign-in
-//               // flow, so it's possible for the user to sign in with an account
-//               // with a different email from the first one.
-
-//               // Link the Facebook credential. We have access to the pending
-//               // credential, so we can directly call the link method.
-//               result.user.linkWithCredential(pendingCred).then(usercred => {
-//                 // Success.
-//                 goToApp();
-//               });
-//             });
-//           });
-//         }
-//       });
-
-// function facebookSignOut() {
-//   firebase
-//     .auth()
-//     .signOut()
-
-//     .then(
-//       function () {
-//         console.log('Signout successful!');
-//       },
-//       function (error) {
-//         console.log('Signout failed');
-//       }
-//     );
-// }
-
-// const facebookSignInHandler = async () => {
-//   facebookProvider.addScope('public_profile');
-//   facebookProvider.addScope('email');
-//   facebookProvider.setCustomParameters({
-//     prompt: 'select_account',
-//   });
-//   try {
-//     const result = await signInWithPopup(auth, facebookProvider);
-//     // The signed-in user info.
-//     const user = result.user;
-//     navigate('user');
-
-//     // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-//     const credential = FacebookAuthProvider.credentialFromResult(result);
-//     const accessToken = credential.accessToken;
-
-//     // IdP data available using getAdditionalUserInfo(result)
-//     // ...
-//   } catch (error) {
-//     // Handle Errors here.
-//     if (error.code === 'auth/account-exists-with-different-credential') {
-//       setUserToStore(
-//         {
-//           name: error.customData._tokenResponse.displayName,
-//           email: error.customData._tokenResponse.email,
-//         },
-//         error.customData._tokenResponse.localId
-//       );
-
-//       if (error.customData._tokenResponse.email === adminEmail) {
-//         navigate('admin');
-//       } else {
-//         navigate('user');
-//       }
-//     }
-//   }
-// };
-
-// <Button
-//   type="button"
-//   block
-//   mx="auto"
-//   primary
-//   style={{ width: '220px' }}
-//   onClick={facebookSignInHandler}
-// >
-//   Sign in with Facebook
-// </Button>
-// <Button
-//   block
-//   mx="auto"
-//   primary
-//   style={{ width: '220px' }}
-//   onClick={facebookSignOut}
-// >
-//   Sign out with Facebook
-// </Button>

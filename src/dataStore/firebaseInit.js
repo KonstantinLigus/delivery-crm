@@ -1,15 +1,39 @@
-import * as firebaseui from 'firebaseui';
 import firebase from 'firebase/compat/app';
-import 'firebaseui/dist/firebaseui.css';
 import 'firebase/compat/auth';
+import * as firebaseui from 'firebaseui';
+import 'firebaseui/dist/firebaseui.css';
 import { firebaseConfig } from 'dataStore/firebaseConfig';
-import { getAuth, FacebookAuthProvider } from 'firebase/auth';
+import { FacebookAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 
 export const app = firebase.initializeApp(firebaseConfig);
 
-export const auth = getAuth();
+export const auth = firebase.auth(app);
 export const facebookProvider = new FacebookAuthProvider();
+export const googleProvider = new GoogleAuthProvider();
 
-export const ui =
-  firebaseui.auth.AuthUI.getInstance() ||
-  new firebaseui.auth.AuthUI(firebase.auth());
+export const getProviderForProviderId = method => {
+  switch (method) {
+    case 'google.com':
+      return googleProvider;
+
+    case 'facebook.com':
+      return googleProvider;
+
+    case 'emailLink':
+      return;
+
+    default:
+      break;
+  }
+};
+
+export const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+  ],
+};
+
+export const ui = new firebaseui.auth.AuthUI(firebase.auth());

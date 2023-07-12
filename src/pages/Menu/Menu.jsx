@@ -1,27 +1,33 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { BDiv, Button, Col, Row, Container, List } from 'bootstrap-4-react';
-import { getUserFromStore } from 'dataStore/firestoreActions';
+import { getUsersByFieldInStore } from 'dataStore/firestoreActions';
 import { useEffect, useState } from 'react';
 import { adminEmail } from 'dataStore/firebaseConfig';
 import { auth } from 'dataStore/firebaseInit';
+import { ReactComponent as MenuLogo } from '../../icons/menu.svg';
+import { ReactComponent as CloseLogo } from '../../icons/close.svg';
+import { Navbar } from 'bootstrap-4-react/lib/components';
 
 export const Menu = () => {
   const [userState, setUserState] = useState({});
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isMenuShown, setIsMenuShown] = useState('none');
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // const auth = getAuth();
-    // (async () => {
-    // const user = auth.currentUser;
-    onAuthStateChanged(auth, async user => {
+    const unsubscribe = onAuthStateChanged(auth, async user => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         setIsUserLoggedIn(true);
-        setUserState(await getUserFromStore(user.uid));
+        setUserState(
+          ...(await getUsersByFieldInStore({
+            searchedField: 'email',
+            value: user.email,
+          }))
+        );
         if (user.email === adminEmail) {
           setIsAdminLoggedIn(true);
         }
@@ -30,13 +36,12 @@ export const Menu = () => {
         setUserState({});
         setIsAdminLoggedIn(false);
       }
-      // })();
     });
+    return () => unsubscribe();
   }, []);
 
   const SignOutHandler = async () => {
     try {
-      const auth = getAuth();
       await signOut(auth);
       setUserState({});
       setIsAdminLoggedIn(false);
@@ -45,51 +50,82 @@ export const Menu = () => {
       console.log('signOut failed', error);
     }
   };
+
+  const menuClickHandler = () =>
+    setIsMenuShown(prevState => {
+      if (prevState === 'none') {
+        return 'block';
+      }
+      return 'none';
+    });
+
   return (
     <>
-      <List
+      <Button
+        display="block sm-none"
+        onClick={menuClickHandler}
+        p="0"
         style={{
-          height: '100%',
-          width: '130px',
-          position: 'fixed',
-          borderWidth: '20px',
-          borderStyle: 'solid',
-          borderColor: '#423d3d',
-          backgroundColor: '#423d3d',
+          marginLeft: 'auto',
+          backgroundColor: 'transparent',
+          color: '#fff',
         }}
       >
-        {location.pathname === '/' && (
-          <List.Item mb="3">
-            <NavLink to="/">Autorization</NavLink>
-          </List.Item>
-        )}
-        {location.pathname !== '/' && isUserLoggedIn && (
-          <List.Item mb="3">
-            <NavLink to="user">User</NavLink>
-          </List.Item>
-        )}
-        {location.pathname !== '/' && isAdminLoggedIn && (
-          <List.Item>
-            <NavLink to="admin">Edit users</NavLink>
-          </List.Item>
-        )}
-      </List>
-      <BDiv style={{ marginLeft: '130px' }}>
-        {location.pathname !== '/' && isUserLoggedIn && (
-          <Container fluid>
-            <Row alignItems="center" border="bottom" shadow="sm" p="3">
-              <Col md>{userState.email}</Col>
-              <Col md>{userState.name}</Col>
-              <Col md="auto">
-                <Button onClick={SignOutHandler} warning>
-                  Sign out
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        )}
-        <BDiv style={{ padding: '20px' }}>
-          <Outlet />
+        <CloseLogo />
+      </Button>
+      <Navbar
+        display={`${isMenuShown} sm-block`}
+        style={{
+          height: '100vh',
+          width: '130px',
+          position: 'fixed',
+          padding: '20px',
+          backgroundColor: '#423d3d',
+          zIndex: 1,
+        }}
+      >
+        <List>
+          {location.pathname === '/' && (
+            <List.Item mb="3">
+              <NavLink to="/">Autorization</NavLink>
+            </List.Item>
+          )}
+          {location.pathname !== '/' && isUserLoggedIn && (
+            <List.Item mb="3">
+              <NavLink to="user">User</NavLink>
+            </List.Item>
+          )}
+          {location.pathname !== '/' && isAdminLoggedIn && (
+            <List.Item>
+              <NavLink to="admin">Edit users</NavLink>
+            </List.Item>
+          )}
+        </List>
+      </Navbar>
+      <BDiv display="block sm-flex">
+        <BDiv style={{ minWidth: '130px' }} display="none sm-block" />
+        <BDiv w="100">
+          {location.pathname !== '/' && isUserLoggedIn && (
+            <Container fluid sticky="top" style={{ backgroundColor: '#fff' }}>
+              <Row alignItems="center" border="bottom" shadow="sm" p="3">
+                <Col display="sm-none">
+                  <Button onClick={menuClickHandler}>
+                    <MenuLogo />
+                  </Button>
+                </Col>
+                <Col md>{userState.email}</Col>
+                <Col md>{userState.name}</Col>
+                <Col md="auto">
+                  <Button onClick={SignOutHandler} warning>
+                    Sign out
+                  </Button>
+                </Col>
+              </Row>
+            </Container>
+          )}
+          <BDiv style={{ padding: '20px' }}>
+            <Outlet />
+          </BDiv>
         </BDiv>
       </BDiv>
     </>

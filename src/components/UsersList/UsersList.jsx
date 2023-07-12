@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { UserItem } from 'components/UserItem/UserItem';
-import { getAllUsers } from 'dataStore/firestoreActions';
+import { getAllUsersFromStore } from 'dataStore/firestoreActions';
 import { List } from 'components/List/List';
 
 export const UsersList = () => {
@@ -8,7 +8,7 @@ export const UsersList = () => {
 
   useEffect(() => {
     (async () => {
-      const usersFromDB = await getAllUsers();
+      const usersFromDB = await getAllUsersFromStore();
       setUsers(usersFromDB);
     })();
   }, []);

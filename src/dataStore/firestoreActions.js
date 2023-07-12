@@ -1,5 +1,4 @@
 import {
-  setDoc,
   doc,
   getDoc,
   getDocs,
@@ -16,11 +15,17 @@ import { app } from './firebaseInit';
 
 const db = getFirestore(app);
 
-export const setUserToStore = async (user, id) => {
-  await setDoc(doc(db, 'users', id), user, { merge: true });
+export const setUserToStore = async user => {
+  const existingUserFromDB = getUsersByFieldInStore({
+    searchedField: 'email',
+    value: user.email,
+  });
+  if (existingUserFromDB.length === 0) {
+    await addDoc(doc(db, 'users'), user);
+  }
 };
 
-export const getUserFromStore = async id => {
+export const getUserFromStoreById = async id => {
   const userSnap = await getDoc(doc(db, 'users', id));
 
   if (userSnap.exists()) {
@@ -30,7 +35,7 @@ export const getUserFromStore = async id => {
   }
 };
 
-export const getAllUsers = async () => {
+export const getAllUsersFromStore = async () => {
   const usersSnap = await getDocs(collection(db, 'users'));
   if (usersSnap.empty) {
     return [];
@@ -43,25 +48,25 @@ export const getAllUsers = async () => {
   return users;
 };
 
-export const updateUser = async ({ id, obj }) => {
+export const updateUserInStore = async ({ id, obj }) => {
   await updateDoc(doc(db, 'users', id), obj);
 };
 
-export const getUsersByProp = async ({ searchedProp, value }) => {
-  const q = query(collection(db, 'users'), where(searchedProp, '==', value));
+export const getUsersByFieldInStore = async ({ searchedField, value }) => {
+  const q = query(collection(db, 'users'), where(searchedField, '==', value));
   const usersSnap = await getDocs(q);
   if (usersSnap.empty) {
     return [];
   }
-  const filteredUsers = usersSnap.docs.map(userSnap => {
+  const users = usersSnap.docs.map(userSnap => {
     const user = userSnap.data();
     user.id = userSnap.id;
     return user;
   });
-  return filteredUsers;
+  return users;
 };
 
-export const getAllCars = async () => {
+export const getAllCarsInStore = async () => {
   const carsSnap = await getDocs(collection(db, 'cars'));
   if (carsSnap.empty) {
     return [];
@@ -79,7 +84,7 @@ export const addTripToStore = async trip => {
   return newTrip;
 };
 
-export const getAllTrips = async () => {
+export const getAllTripsFromStore = async () => {
   const tripsSnap = await getDocs(collection(db, 'trips'));
   if (tripsSnap.empty) {
     return [];
@@ -92,7 +97,7 @@ export const getAllTrips = async () => {
   return trips;
 };
 
-export const getUserTrips = async id => {
+export const getUserTripsFromStore = async id => {
   const colRef = collection(db, 'trips');
   const q = query(
     colRef,

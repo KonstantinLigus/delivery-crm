@@ -33,7 +33,9 @@ ul {
   margin: 0;
   list-style: none;
 }
-* {
+
+*,
+a {
   box-sizing: border-box;
   text-decoration: none;
 }
@@ -43,4 +45,7 @@ a {
 }
 .active {
   color: #ffc107;
+}
+.active:hover {
+  color: #c9b474;
 }

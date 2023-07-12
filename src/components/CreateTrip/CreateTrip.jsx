@@ -1,7 +1,7 @@
 import { Select } from 'components/Select/Select';
 import {
   addTripToStore,
-  getAllCars,
+  getAllCarsInStore,
   usersListListener,
 } from 'dataStore/firestoreActions';
 import { useEffect, useState } from 'react';
@@ -19,7 +19,7 @@ export const CreateTrip = () => {
   useEffect(() => {
     const unsubscribeUsersListListener = usersListListener(setUsers);
     (async () => {
-      const carsDB = await getAllCars();
+      const carsDB = await getAllCarsInStore();
       setCars(carsDB);
     })();
     return () => unsubscribeUsersListListener();

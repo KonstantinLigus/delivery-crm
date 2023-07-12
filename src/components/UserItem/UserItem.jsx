@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { updateUser } from 'dataStore/firestoreActions';
+import { updateUserInStore } from 'dataStore/firestoreActions';
 import { InputGroup, Form, Card } from 'bootstrap-4-react';
 
 export const UserItem = ({ item }) => {
@@ -8,7 +8,7 @@ export const UserItem = ({ item }) => {
   const selectRoleHandler = async e => {
     const id = e.target.attributes.uid.value;
     const role = e.target.value;
-    await updateUser({ id, obj: { role } });
+    await updateUserInStore({ id, obj: { role } });
     setRole(role);
   };
 
