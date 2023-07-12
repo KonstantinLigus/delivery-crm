@@ -9,7 +9,9 @@ import { ReactComponent as MenuLogo } from '../../icons/menu.svg';
 import { ReactComponent as CloseLogo } from '../../icons/close.svg';
 import { Navbar } from 'bootstrap-4-react/lib/components';
 
-const linkStyles = { color: '#fff' };
+const linkStyles = isActive => ({
+  color: isActive ? '#ffc107' : '#fff',
+});
 
 export const Menu = () => {
   const [userState, setUserState] = useState({});
