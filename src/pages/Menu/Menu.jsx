@@ -9,6 +9,8 @@ import { ReactComponent as MenuLogo } from '../../icons/menu.svg';
 import { ReactComponent as CloseLogo } from '../../icons/close.svg';
 import { Navbar } from 'bootstrap-4-react/lib/components';
 
+const linkStyles = { color: '#fff' };
+
 export const Menu = () => {
   const [userState, setUserState] = useState({});
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -87,17 +89,23 @@ export const Menu = () => {
         <List>
           {location.pathname === '/' && (
             <List.Item mb="3">
-              <NavLink to="/">Autorization</NavLink>
+              <NavLink to="/" style={linkStyles}>
+                Autorization
+              </NavLink>
             </List.Item>
           )}
           {location.pathname !== '/' && isUserLoggedIn && (
             <List.Item mb="3">
-              <NavLink to="user">User</NavLink>
+              <NavLink to="user" style={linkStyles}>
+                User
+              </NavLink>
             </List.Item>
           )}
           {location.pathname !== '/' && isAdminLoggedIn && (
             <List.Item>
-              <NavLink to="admin">Edit users</NavLink>
+              <NavLink to="admin" style={linkStyles}>
+                Edit users
+              </NavLink>
             </List.Item>
           )}
         </List>
