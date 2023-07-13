@@ -34,12 +34,7 @@ ul {
   list-style: none;
 }
 
-*,
-a {
+* {
   box-sizing: border-box;
   text-decoration: none;
-}
-
-a {
-  color: #ffffff;
 }

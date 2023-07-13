@@ -9,8 +9,9 @@ import { ReactComponent as MenuLogo } from '../../icons/menu.svg';
 import { ReactComponent as CloseLogo } from '../../icons/close.svg';
 import { Navbar } from 'bootstrap-4-react/lib/components';
 
-const linkStyles = isActive => ({
+const linkStyles = ({ isActive }) => ({
   color: isActive ? '#ffc107' : '#fff',
+  textDecoration: 'none',
 });
 
 export const Menu = () => {
@@ -65,18 +66,6 @@ export const Menu = () => {
 
   return (
     <>
-      <Button
-        display="block sm-none"
-        onClick={menuClickHandler}
-        p="0"
-        style={{
-          marginLeft: 'auto',
-          backgroundColor: 'transparent',
-          color: '#fff',
-        }}
-      >
-        <CloseLogo />
-      </Button>
       <Navbar
         display={`${isMenuShown} sm-block`}
         style={{
@@ -85,9 +74,21 @@ export const Menu = () => {
           position: 'fixed',
           padding: '20px',
           backgroundColor: '#423d3d',
-          zIndex: 1,
+          zIndex: 3,
         }}
       >
+        <Button
+          display="block sm-none"
+          onClick={menuClickHandler}
+          p="0"
+          style={{
+            marginLeft: 'auto',
+            backgroundColor: 'transparent',
+            color: '#fff',
+          }}
+        >
+          <CloseLogo />
+        </Button>
         <List>
           {location.pathname === '/' && (
             <List.Item mb="3">
@@ -116,15 +117,19 @@ export const Menu = () => {
         <BDiv style={{ minWidth: '130px' }} display="none sm-block" />
         <BDiv w="100">
           {location.pathname !== '/' && isUserLoggedIn && (
-            <Container fluid sticky="top" style={{ backgroundColor: '#fff' }}>
+            <Container
+              fluid
+              sticky="top"
+              style={{ zIndex: 2, backgroundColor: '#fff' }}
+            >
               <Row alignItems="center" border="bottom" shadow="sm" p="3">
                 <Col display="sm-none">
                   <Button onClick={menuClickHandler}>
                     <MenuLogo />
                   </Button>
                 </Col>
-                <Col md>{userState.email}</Col>
-                <Col md>{userState.name}</Col>
+                <Col md="auto">{userState.email}</Col>
+                <Col md="auto">{userState.name}</Col>
                 <Col md="auto">
                   <Button onClick={SignOutHandler} warning>
                     Sign out
@@ -133,7 +138,7 @@ export const Menu = () => {
               </Row>
             </Container>
           )}
-          <BDiv style={{ padding: '20px' }}>
+          <BDiv p="3">
             <Outlet />
           </BDiv>
         </BDiv>
